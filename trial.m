@@ -15,7 +15,6 @@ totalMachines = sum(noofMachines);
 %end
 inputTime
 inputEnergy
-
 maxMachines=cumsum(noofMachines);
 minMachines=maxMachines-noofMachines+ones(1,noofStages);
 position = rand(noofOriginalJobs,noofStages,50);
@@ -30,44 +29,62 @@ lambda=input('Enter the value of lambda: ');
 q = getQ(position);
 p = getP(noofOriginalJobs,noofStages,inputTime,q);
 e = getE(noofOriginalJobs,noofStages,inputEnergy,q);
-fitness = getFitness(noofStages,noofOriginalJobs,noofMachines,position,maxMachines,p);
+fitness = zeros(1,50);
+for i=1:50
+    fitness(1,i) = getFitness(noofStages,noofOriginalJobs,noofMachines,position,maxMachines,p,e,lambda,i);
+end
 delta = ones(noofOriginalJobs,noofStages,50);
 globalBestFitness=intmax('int64');
 globalBestFitnessIndex=0;
 velocity = rand(noofOriginalJobs,noofStages,50);
 rCoeff = rand(1,5);
 isSame = false;
-
-while(sum(sum(sum(delta(:,:,:))))~=0)
-    [localBestFitness,localBestFitnessIndex] = min(fitness);
-    if(localBestFitness<globalBestFitness)
-        globalBestFitness = localBestFitness;
-        globalBestFitnessIndex = localBestFitnessIndex;
-    end
+for i=1:100
     positionOld = position;
-    for j=1:50
-        velocity(:,:,j) = rCoeff(1)*velocity(:,:,j) + rCoeff(2)*rCoeff(3)*(position(:,:,localBestFitnessIndex)-position(:,:,j)) + rCoeff(4)*rCoeff(5)*(position(:,:,globalBestFitnessIndex)-position(:,:,j));
-        temp = position(:,:,j) - floor(position(:,:,j)) + velocity(:,:,j);
-        for indI=1:noofOriginalJobs
-            for indJ=1:noofStages
-                checkVariable = position(indI,indJ,j) + temp(indI,indJ);
-                if(checkVariable>maxMachines(indJ) || checkVariable<minMachines(indJ))
-                    %DONT UPDATE
-                else
-                    position(indI,indJ,j) = position(indI,indJ,j) + temp(indI,indJ);
+    if (sum(sum(sum(delta(:,:,:))))==0)
+        position;
+        position = mutate(position,noofMachines,0.4);
+        delta = position - positionOld;
+        q = getQ(position);
+        p = getP(noofOriginalJobs,noofStages,inputTime,q);
+        e = getE(noofOriginalJobs,noofStages,inputEnergy,q);
+        for i=1:50
+            fitness(1,i) = getFitness(noofStages,noofOriginalJobs,noofMachines,position,maxMachines,p,e,lambda,i);
+        end
+    end
+    while(sum(sum(sum(delta(:,:,:))))~=0)
+        [localBestFitness,localBestFitnessIndex] = min(fitness);
+        if(localBestFitness<globalBestFitness)
+            globalBestFitness = localBestFitness;
+            globalBestFitnessIndex = localBestFitnessIndex;
+        end
+        positionOld = position;
+        for j=1:50
+            velocity(:,:,j) = rCoeff(1)*velocity(:,:,j) + rCoeff(2)*rCoeff(3)*(position(:,:,localBestFitnessIndex)-position(:,:,j)) + rCoeff(4)*rCoeff(5)*(position(:,:,globalBestFitnessIndex)-position(:,:,j));
+            temp = position(:,:,j) - floor(position(:,:,j)) + velocity(:,:,j);
+            for indI=1:noofOriginalJobs
+                for indJ=1:noofStages
+                    checkVariable = position(indI,indJ,j) + temp(indI,indJ);
+                    if(checkVariable>maxMachines(indJ) || checkVariable<minMachines(indJ))
+                        %DONT UPDATE
+                    else
+                        position(indI,indJ,j) = position(indI,indJ,j) + temp(indI,indJ);
+                    end
                 end
             end
-        end 
+        end
+        q = getQ(position);
+        p = getP(noofOriginalJobs,noofStages,inputTime,q);
+        e = getE(noofOriginalJobs,noofStages,inputEnergy,q);
+        for i=1:50
+            fitness(1,i) = getFitness(noofStages,noofOriginalJobs,noofMachines,position,maxMachines,p,e,lambda,i);
+        end
+        delta = position - positionOld;
     end
-    q = getQ(position);
-    p = getP(noofOriginalJobs,noofStages,inputTime,q);
-    e = getE(noofOriginalJobs,noofStages,inputEnergy,q);
-    fitness = getFitness(noofStages,noofOriginalJobs,noofMachines,position,maxMachines,p)
-    delta = position - positionOld;    
 end
-
 fitness
 [localBestFitness,localBestFitnessIndex] = min(fitness)
+q(:,:,localBestFitnessIndex)
 
 
 
