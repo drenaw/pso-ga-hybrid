@@ -41,11 +41,8 @@ rCoeff = rand(1,5);
 isSame = false;
 positionOld = position;
 for i=1:5000
-    issame=0;
     delta = position - positionOld;
-    if (sum(sum(sum(delta(:,:,:))))==0)
-        issame = issame+1;
-    end
+    
     if (sum(sum(sum(delta(:,:,:))))==0 && issame>10)
         positionOld = position;
         position = mutate(position,noofMachines,0.4);
