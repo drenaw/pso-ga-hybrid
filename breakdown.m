@@ -11,49 +11,48 @@ for i=1:length(maxMachines)
     end
     
 end
-position(:,:,ps)
+
+
 %check if the machine is operating at breakTime or not
-
-
 minMachines=maxMachines-noofMachines+ones(1,noofStages);
 if(breakStage~=1)
     breakMachine=breakMachine-maxMachines(breakStage-1);
 end
-breakMachine
 
 
 for j=1:length(position(:,1,ps))
-    j
-    breakTime
-    en(j,breakMachine,i)
-    start(j,breakMachine,i)
     if(en(j,breakMachine,i)>breakTime)
         if(start(j,breakMachine,i)<=breakTime)
-            disp('Machine running during breakTime');
+            
             f=rand;
             position(j,i,ps)=minMachines(i)+f*[maxMachines(i)-minMachines(i)] + f;
-            while(floor(position(j,i,ps))==(breakMachine+maxMachines(breakStage-1)))
+            if(breakStage>1)
+                breakMachine=breakMachine+maxMachines(breakStage-1);
+            end
+            while(floor(position(j,i,ps))==breakMachine)
                 f=rand;
-                f
+                
                 position(j,i,ps)=minMachines(i)+f*[maxMachines(i)-minMachines(i)] + f;
             end
-            position(j,i,ps)
+
         end
         
-    if(start(j,breakMachine,i)>breakTime && start(j,breakMachine,i)~=Inf)
-        disp('Machine not running during breakTime');
-        f=rand;
-        position(j,i,ps)=minMachines(i)+f*[maxMachines(i)-minMachines(i)] + f;
-        while(floor(position(j,i,ps))==(breakMachine+maxMachines(breakStage-1)))
+        if(start(j,breakMachine,i)>breakTime && start(j,breakMachine,i)~=Inf)
             f=rand;
             position(j,i,ps)=minMachines(i)+f*[maxMachines(i)-minMachines(i)] + f;
-        end
-        position(j,i,ps);
-        
-    end
-    end
-%return the updated position
-newPos=position(:,:,ps);
+            if(breakStage>1)
+                breakMachine=breakMachine+maxMachines(breakStage-1);
+            end
+            while(floor(position(j,i,ps))==breakMachine)
+                f=rand;
+                position(j,i,ps)=minMachines(i)+f*[maxMachines(i)-minMachines(i)] + f;
+            end
 
+            
+        end
+    end
+    %return the updated position
+    newPos=position(:,:,ps);
+    
 end
 

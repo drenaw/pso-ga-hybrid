@@ -189,6 +189,4 @@ for i=1:noofStages
     end
     
 end
-    start
-    en
 end

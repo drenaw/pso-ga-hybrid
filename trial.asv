@@ -32,8 +32,8 @@ e = getE(noofOriginalJobs,noofStages,inputEnergy,q);
 
 %take break down values
 
-b = input('Breakdown?\n1-Yes\n0-No\n');
-if(b==1)
+b = input('Breakdown?\ny-Yes\nn-No');
+if(b=='y')
     breakMachine = input('Enter the machine number which breaks down');
     breakTime = input('Enter the Time at which machine breaks down');
     for i=1:50
@@ -74,15 +74,6 @@ for i=1:5000
         q = getQ(position);
         p = getP(noofOriginalJobs,noofStages,inputTime,q);
         e = getE(noofOriginalJobs,noofStages,inputEnergy,q);
-        if (b==1)
-            for i=1:50
-                position(:,:,i) = breakdown(noofOriginalJobs,noofMachines,maxMachines,noofStages,position,p,i,breakMachine,breakTime);
-            end
-            q = getQ(position);
-            p = getP(noofOriginalJobs,noofStages,inputTime,q);
-            e = getE(noofOriginalJobs,noofStages,inputEnergy,q);
-        end
-        
         for i=1:50
             fitness(1,i) = getFitness(noofStages,noofOriginalJobs,noofMachines,position,maxMachines,p,e,lambda,i);
         end
@@ -111,7 +102,7 @@ for i=1:5000
         q = getQ(position);
         p = getP(noofOriginalJobs,noofStages,inputTime,q);
         e = getE(noofOriginalJobs,noofStages,inputEnergy,q);
-        if (b==1)
+        if (b=='y')
             for i=1:50
                 position(:,:,i) = breakdown(noofOriginalJobs,noofMachines,maxMachines,noofStages,position,p,i,breakMachine,breakTime);
             end
